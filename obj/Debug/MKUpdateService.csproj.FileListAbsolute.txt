@@ -1,0 +1,8 @@
+C:\Users\m4r10\Documents\Visual Studio 2012\Projects\MKMinecraftEditor\MKUpdateService\bin\Debug\MKUpdateService.exe
+C:\Users\m4r10\Documents\Visual Studio 2012\Projects\MKMinecraftEditor\MKUpdateService\bin\Debug\MKUpdateService.pdb
+C:\Users\m4r10\Documents\Visual Studio 2012\Projects\MKMinecraftEditor\MKUpdateService\obj\Debug\MKUpdateService.csprojResolveAssemblyReference.cache
+C:\Users\m4r10\Documents\Visual Studio 2012\Projects\MKMinecraftEditor\MKUpdateService\obj\Debug\MKUpdateService.exe
+C:\Users\m4r10\Documents\Visual Studio 2012\Projects\MKMinecraftEditor\MKUpdateService\obj\Debug\MKUpdateService.pdb
+C:\Users\m4r10\Documents\Visual Studio 2012\Projects\MKMinecraftEditor\MKUpdateService\bin\Debug\MKUpdateService.exe.config
+C:\Users\m4r10\Documents\Visual Studio 2012\Projects\MKMinecraftEditor\MKUpdateService\bin\Debug\Ionic.Zip.dll
+C:\Users\m4r10\Documents\Visual Studio 2012\Projects\MKMinecraftEditor\MKUpdateService\bin\Debug\Ionic.Zip.xml
