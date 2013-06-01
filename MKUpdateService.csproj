@@ -44,6 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Download\DownloadedUpdateFileEventArgs.cs" />
     <Compile Include="Download\DownloadManager.cs" />
     <Compile Include="Download\IDownloadManager.cs" />
     <Compile Include="Extract\ExtractorZip.cs" />
@@ -52,7 +53,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tools\Configuration.cs" />
     <Compile Include="Tools\UsefulFunctions.cs" />
+    <Compile Include="Update\InformationEventArgs.cs" />
+    <Compile Include="Update\UpdateManager.cs" />
     <Compile Include="Versions\IVersionParser.cs" />
+    <Compile Include="Versions\UpdateFile.cs" />
     <Compile Include="Versions\VersionParserTxt.cs" />
   </ItemGroup>
   <ItemGroup>

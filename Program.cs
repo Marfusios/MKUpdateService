@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
 using MKUpdateService.Download;
 using MKUpdateService.Tools;
+using MKUpdateService.Update;
 using MKUpdateService.Versions;
 
 namespace MKUpdateService
@@ -52,35 +54,35 @@ namespace MKUpdateService
             }
 
 
-            /*var dowMan = new DownloadManager();
 
-            dowMan.DownloadCompleted +=
-                (sender, eventArgs) => Console.WriteLine("Downloaded");
-            dowMan.DownloadProgressChanged += (sender, eventArgs) => Console.Write(eventArgs.ProgressPercentage + " ");
+            var updateMan = new UpdateManager(OwnerPath, UrlToVersions, CurrentVersion);
 
+            updateMan.End += OnEnd;   
+            updateMan.Failure += (sender, eventArgs) => Console.WriteLine("[!] " + eventArgs.GetException().ToString());
+            updateMan.Information += (sender, eventArgs) => Console.WriteLine("[*] " + eventArgs.Msg);
 
-            dowMan.DownloadFile(new Uri("http://decrypter.9e.cz/updates/update1_4.zip"));
-            */
-            
-            /*IVersionParser parser = new VersionParserTxt();
-
-            var list = parser.GetMissingVersions(UrlToVersions, new Version(1,1));
-
-            foreach (var uri in list)
-            {
-                Console.WriteLine(uri.ToString());
-            }*/
-
-            /*var extr = new Extract.ExtractorZip();
-
-            extr.Destination = @"C:\Users\m4r10\Desktop\test\tmp\moje";
-            extr.Extract(@"C:\Users\m4r10\Desktop\test\tmp\hej.zip");*/
-
-           Console.WriteLine("Done");  
-           Console.Read();
+            updateMan.Start();
         }
 
-        
-        
+        private static void OnEnd(object sender, EventArgs eventArgs)
+        {
+            Console.WriteLine("[*] Updating was ended");
+            if (Path.GetExtension(OwnerPath) == ".exe")
+            {
+                Console.WriteLine("[+] Starting app: " + OwnerPath);
+                try
+                {
+                    Process.Start(OwnerPath);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("[!] Problem with starting app. Bad path.");
+                }
+            }
+            else
+            {
+                Console.WriteLine("[!] Cannot start app. First parameter must be executable file.");
+            }
+        }
     }
 }

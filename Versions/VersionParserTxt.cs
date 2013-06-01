@@ -21,11 +21,11 @@ namespace MKUpdateService.Versions
        /// <param name="uriToVersions"></param>
        /// <param name="currentVersion"></param>
        /// <returns></returns>
-        public List<Uri> GetMissingVersions(Uri uriToVersions, Version currentVersion)
+        public List<UpdateFile> GetMissingVersions(Uri uriToVersions, Version currentVersion)
         {
             if(Path.GetExtension(uriToVersions.ToString()) != ".txt") throw new ArgumentException("This parser takes only txt files", "uriToVersions");
 
-            List<Uri> result = new List<Uri>();
+            List<UpdateFile> result = new List<UpdateFile>();
 
             try
             {
@@ -50,7 +50,7 @@ namespace MKUpdateService.Versions
 
                         if(Path.GetExtension(path.ToString()) != Configuration.UpdateFileExtension) throw new FormatException("Uri does not contain expected extension, should be: " + Configuration.UpdateFileExtension);
 
-                        result.Add(path);
+                        result.Add(new UpdateFile(version, path));
                     }
                 }
 

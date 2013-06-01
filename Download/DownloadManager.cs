@@ -10,36 +10,55 @@ namespace MKUpdateService.Download
 {
     public class DownloadManager : IDownloadManager
     {
-        public event System.Net.DownloadProgressChangedEventHandler DownloadProgressChanged;
+        #region EVENTS
 
-        public event System.ComponentModel.AsyncCompletedEventHandler DownloadCompleted;
+        public event DownloadProgressChangedEventHandler DownloadProgressChanged;
 
-        private readonly WebClient webClient = new WebClient();
+        public delegate void DownloadedUpdateFileEventHandler(object sender, DownloadedUpdateFileEventArgs e);
 
-        public string PathToUpdateDirectory { get; set; }
+        public event DownloadedUpdateFileEventHandler DownloadCompleted;
+        protected virtual void OnDownloadCompleted(DownloadedUpdateFileEventArgs downloadedUpdateFileEventArgs)
+        {
+            DownloadedUpdateFileEventHandler handler = DownloadCompleted;
+            if (handler != null) handler(this, downloadedUpdateFileEventArgs);
+        }
+
+        #endregion
+
+
+        private WebClient webClient; // = new WebClient();
+
+        public string Destination { get; set; }
 
         public void DownloadFile(Uri pathToFile)
         {
             try
             {
-                this.webClient.DownloadProgressChanged += DownloadProgressChanged;
-                this.webClient.DownloadFileCompleted += DownloadCompleted;
+                this.webClient = new WebClient();       
 
-                if (string.IsNullOrEmpty(PathToUpdateDirectory))
+                if (string.IsNullOrEmpty(Destination))
                 {
-                    PathToUpdateDirectory = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + Configuration.UpdateDirectory;
+                    Destination = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + Configuration.UpdateDirectory;
+                }
+                else if (!Destination.Contains(Configuration.UpdateDirectory))
+                {
+                    Destination += Configuration.UpdateDirectory;
                 }
 
 
-                if (!Directory.Exists(PathToUpdateDirectory))
+                if (!Directory.Exists(Destination))
                 {
-                    Directory.CreateDirectory(PathToUpdateDirectory);
+                    Directory.CreateDirectory(Destination);
                 }
 
 
                 // Download
-                string pathToFileOnComputer = PathToUpdateDirectory + @"\\" +
+                string pathToFileOnComputer = Destination + @"\\" +
                                               Path.GetFileName(pathToFile.ToString());
+
+                this.webClient.DownloadProgressChanged += DownloadProgressChanged;
+                this.webClient.DownloadFileCompleted +=
+                    (sender, args) => OnDownloadCompleted(new DownloadedUpdateFileEventArgs(pathToFileOnComputer));
 
                 this.webClient.DownloadFileAsync(pathToFile, pathToFileOnComputer);
 
@@ -48,6 +67,11 @@ namespace MKUpdateService.Download
             {
                 throw new InvalidOperationException("An error occurred while trying to download update file from " + pathToFile + " : ", e);
             }
+        }
+
+        public void DownloadFile(Versions.UpdateFile updateFile)
+        {
+            DownloadFile(updateFile.Url);
         }
 
         public void DownloadFiles(Uri[] pathsToFiles)
@@ -65,7 +89,34 @@ namespace MKUpdateService.Download
             }
         }
 
-
+        public void DownloadFiles(List<Uri> pathsToFiles)
+        {
+            try
+            {
+                foreach (var path in pathsToFiles)
+                {
+                    DownloadFile(path);
+                }
+            }
+            catch (Exception e)
+            {
+                throw new InvalidOperationException("Cannot download one file, downloading was interrupt: " + e);
+            }
+        }
         
+        public void DownloadFiles(List<Versions.UpdateFile> updateFiles)
+        {
+            try
+            {
+                foreach (var uF in updateFiles)
+                {
+                    DownloadFile(uF);
+                }
+            }
+            catch (Exception e)
+            {
+                throw new InvalidOperationException("Cannot download one file, downloading was interrupt: " + e);
+            }
+        }
     }
 }

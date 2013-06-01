@@ -7,6 +7,6 @@ namespace MKUpdateService.Versions
 {
     interface IVersionParser
     {
-        List<Uri> GetMissingVersions(Uri uriToVersions, Version currentVersion);
+        List<UpdateFile> GetMissingVersions(Uri uriToVersions, Version currentVersion);
     }
 }
