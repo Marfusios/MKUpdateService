@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using MKUpdateService.Download;
+using MKUpdateService.Tools;
 using MKUpdateService.Versions;
 
 namespace MKUpdateService.Update
@@ -71,6 +72,9 @@ namespace MKUpdateService.Update
             CurrentVersion = currentVersion;
         }
 
+        /// <summary>
+        /// Start updating. Use events to get informations.
+        /// </summary>
         public void Start()
         {
             try
@@ -122,7 +126,24 @@ namespace MKUpdateService.Update
             }
             finally
             {
+                removeTemporaryFolder();
                 OnEnd();
+            }
+        }
+
+        private void removeTemporaryFolder()
+        {
+            if (Directory.Exists(OwnerOrDirectoryPath + Configuration.UpdateDirectory))
+            {
+                try
+                {
+                    Directory.Delete(OwnerOrDirectoryPath + Configuration.UpdateDirectory, true);
+                    OnInformation(new InformationEventArgs("Temporary directory was removed."));
+                }
+                catch (Exception e)
+                {
+                    OnFailure(new ErrorEventArgs(e));
+                }  
             }
         }
 

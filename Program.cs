@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using MKUpdateService.Download;
 using MKUpdateService.Tools;
@@ -21,9 +23,13 @@ namespace MKUpdateService
         
         static void Main(string[] args)
         {
+            track();
+
             if (args.Length != 3)
             {
                 Console.WriteLine("Usage: MKUpdateService.exe <C:/path/appToUpdate.exe> <url to text file Versions> <current version>");
+                Console.WriteLine("Args count: " + args.Length);
+                startApp();
                 return;
             }
 
@@ -35,6 +41,7 @@ namespace MKUpdateService
             if (!Path.IsPathRooted(OwnerPath))
             {
                 Console.WriteLine("First parameter: bad path");
+                startApp();
                 return;
             }
 
@@ -43,6 +50,7 @@ namespace MKUpdateService
             if (UrlToVersions == null)
             {
                 Console.WriteLine("Second parameter: bad url");
+                startApp();
                 return;
             }
 
@@ -50,10 +58,9 @@ namespace MKUpdateService
             if (CurrentVersion == null)
             {
                 Console.WriteLine("Third parameter: bad version format \n Use: 1.0.0.0");
+                startApp();
                 return;
             }
-
-
 
             var updateMan = new UpdateManager(OwnerPath, UrlToVersions, CurrentVersion);
 
@@ -65,6 +72,12 @@ namespace MKUpdateService
         }
 
         private static void OnEnd(object sender, EventArgs eventArgs)
+        {
+            startApp();
+        }
+
+
+        private static void startApp()
         {
             Console.WriteLine("[*] Updating was ended");
             if (Path.GetExtension(OwnerPath) == ".exe")
@@ -82,6 +95,31 @@ namespace MKUpdateService
             else
             {
                 Console.WriteLine("[!] Cannot start app. First parameter must be executable file.");
+            }
+        }
+
+        private static void track()
+        {
+            try
+            {
+                string url = ConfigurationManager.AppSettings["urlToTracker"];
+                if (!String.IsNullOrEmpty(url))
+                {
+                    HttpWebRequest URLReq = (HttpWebRequest)WebRequest.Create(url);
+                    HttpWebResponse URLRes = (HttpWebResponse)URLReq.GetResponse();
+                    if (URLRes.StatusCode == HttpStatusCode.OK)
+                    {
+                        Console.WriteLine("[*] Tracked");
+                    }
+                    else
+                    {
+                        Console.WriteLine("[-] Problem with tracking");
+                    }
+                }
+            }
+            catch
+            {
+                // Nothing
             }
         }
     }
