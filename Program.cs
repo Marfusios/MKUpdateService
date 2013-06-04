@@ -1,15 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Net;
-using System.Text;
-using MKUpdateService.Download;
+using System.Threading;
 using MKUpdateService.Tools;
 using MKUpdateService.Update;
-using MKUpdateService.Versions;
 
 namespace MKUpdateService
 {
@@ -23,7 +19,7 @@ namespace MKUpdateService
         
         static void Main(string[] args)
         {
-            track();
+            new Thread(track).Start();
 
             if (args.Length != 3)
             {
@@ -70,6 +66,8 @@ namespace MKUpdateService
 
             updateMan.Start();
         }
+
+
 
         private static void OnEnd(object sender, EventArgs eventArgs)
         {
